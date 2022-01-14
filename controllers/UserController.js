@@ -2,27 +2,26 @@ class UserController{
     constructor(formId, tableId){
         this.formEl = document.getElementById(formId)
         this.tableEl = document.getElementById(tableId)
+
+        this.onSubmit()
     }
 
     //Quando enviar
     onSubmit(){
         this.formEl.addEventListener("submit", event =>{//arrowFunction evita conflito de escopo do this.getValues()
             //event pega todas as informações sobre o evento chamado
-            event.preventDefault() //cancela a atualização de página do submit
-        
-            let user = this.getValues()
+            event.preventDefault() //cancela a atualização de página do submit 
 
-            this.addLine(user)    
+            this.addLine(this.getValues())    
         })
     }
 
     getValues(){
 
-        let user = {}
+        let user = {};
 
         //elements substitui o fields (prop do objeto de form)
-        let elem = [...this.formEl.elements]
-        elem.forEach(function(field, index){
+        [...this.formEl.elements].forEach(function(field, index){
             if(field.name == 'gender'){
                 if(field.checked){ //(field.checkend === true)
                     user[field.name] = field.value
