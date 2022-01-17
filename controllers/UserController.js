@@ -64,9 +64,11 @@ class UserController{
         //elements substitui o fields (prop do objeto de form)
         [...this.formEl.elements].forEach(function(field, index){
             if(field.name == 'gender'){
-                if(field.checked){ //(field.checkend === true)
+                if(field.checked){ //(field.checked === true)
                     user[field.name] = field.value
                 }
+            }else if(field.name == 'admin'){
+                user[field.name] = field.checked
             }else{
                 user[field.name] = field.value
             }
@@ -85,17 +87,19 @@ class UserController{
 
     addLine(dataUser){
 
-        this.tableEl.innerHTML = `
+        let tr = document.createElement('tr')
+        tr.innerHTML = `
                 <tr>
                     <td><img src="${dataUser.photo}" class="img-circle img-sm"></td>
                     <td>${dataUser.name}</td>
                     <td>${dataUser.email}</td>
-                    <td>${dataUser.admin}</td>
+                    <td>${(dataUser.admin) ?'Sim':'Não'}</td>
                     <td>${dataUser.birth}</td>
                     <td>
                         <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
                         <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
                     </td>
                 </tr>`
+        this.tableEl.appendChild(tr)
     }
 }
