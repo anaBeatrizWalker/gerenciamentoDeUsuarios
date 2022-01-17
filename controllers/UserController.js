@@ -46,7 +46,13 @@ class UserController{
             fileReader.onerror = (e)=>{
                 reject(e)
             }
-            fileReader.readAsDataURL(file)
+            //se tem um arquivo, renderiza
+            if(file){
+                fileReader.readAsDataURL(file) 
+            //se não, renderiza img padrão
+            }else{
+                resolve('dist/img/boxed-bg.jpg')//resolve para que o envio de arquivo não seja obrigatório
+            }
         })
         
     }
