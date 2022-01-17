@@ -113,6 +113,9 @@ class UserController{
     addLine(dataUser){
 
         let tr = document.createElement('tr')
+
+        tr.dataset.user = JSON.stringify(dataUser) //serialização
+
         tr.innerHTML = `
                 <tr>
                     <td><img src="${dataUser.photo}" class="img-circle img-sm"></td>
@@ -126,5 +129,25 @@ class UserController{
                     </td>
                 </tr>`
         this.tableEl.appendChild(tr)
+
+        this.updateCount()
+    }
+
+    //Atualiza a quantidade de usuários
+    updateCount(){
+        let numberUsers = 0;
+        let numberAdmin = 0;
+
+        [...this.tableEl.children].forEach(tr=>{
+
+            numberUsers++ //incrementa mais um para cada elemento encontrado
+
+            let user = JSON.parse(tr.dataset.user) //converte para objeto denovo
+
+            if(user._admin) numberAdmin++ //a conversão de json não continua a instância de admin, por isso devemos chamar ele novamente com underline
+        })
+        //renderiza o resultado
+        document.querySelector("#number-users").innerHTML = numberUsers
+        document.querySelector("#number-users-admin").innerHTML = numberAdmin
     }
 }
