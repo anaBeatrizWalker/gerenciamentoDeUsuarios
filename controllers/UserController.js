@@ -68,9 +68,19 @@ class UserController{
     getValues(){
 
         let user = {};
+        let isValid = true;
 
         //elements substitui o fields (prop do objeto de form)
         [...this.formEl.elements].forEach(function(field, index){
+
+            //se o indexOf do array é > -1, ou seja, encontrou os campos E eles não estão vazios
+            if(['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value){
+    
+                field.parentElement.classList.add('has-error')//acessa o elemento pai, pega a coleção de classes, add +1 classe 'has-error'
+
+                isValid = false //form não tá válido
+            }
+
             if(field.name == 'gender'){
                 if(field.checked){ //(field.checked === true)
                     user[field.name] = field.value
@@ -81,6 +91,10 @@ class UserController{
                 user[field.name] = field.value
             }
         })
+        //form continua válido?
+        if(!isValid){
+            return false
+        }
         return new User(
             user.name, 
             user.gender, 
