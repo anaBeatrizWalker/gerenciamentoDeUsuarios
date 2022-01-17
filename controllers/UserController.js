@@ -18,6 +18,9 @@ class UserController{
 
             let values = this.getValues()
 
+            //se value for falso, cancela o envio do form
+            if(!values) return false //corrige o problema da foto ser entendida como booleano por conta do isValid
+
             this.getPhoto().then(
                 (content)=>{
                 //quando der certo
