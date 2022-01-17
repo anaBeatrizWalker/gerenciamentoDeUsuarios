@@ -14,30 +14,41 @@ class UserController{
 
             let values = this.getValues()
 
-            this.getPhoto((content)=>{
+            this.getPhoto().then(
+                (content)=>{
+                //quando der certo
                 values.photo = content
-
                 this.addLine(values) 
+
+            }, (e)=>{
+                //quando der erro
+                console.error(e)
             })
         })
     }
 
-    getPhoto(callback){
-        let fileReader = new FileReader();
+    getPhoto(){
+        return new Promise((resolve, reject)=>{
+            let fileReader = new FileReader();
 
-        let elements = [...this.formEl.elements].filter(item =>{
-            if (item.name === 'photo'){//filter retorna apenas as fotos e retorna o arquivo
-                return item
+            let elements = [...this.formEl.elements].filter(item =>{
+                if (item.name === 'photo'){//filter retorna apenas as fotos e retorna o arquivo
+                    return item
+                }
+            })
+            let file = elements[0].files[0]//da 1º coleção de elementos, pegue o 1º arquivo
+
+            //quando terminar a leitura da imagem
+            fileReader.onload = () =>{
+                
+                resolve(fileReader.result)
             }
+            fileReader.onerror = (e)=>{
+                reject(e)
+            }
+            fileReader.readAsDataURL(file)
         })
-        let file = elements[0].files[0]//da 1º coleção de elementos, pegue o 1º arquivo
-
-        //quando terminar a leitura da imagem
-        fileReader.onload = () =>{
-            //função de retorno
-            callback(fileReader.result)
-        }
-        fileReader.readAsDataURL(file)
+        
     }
 
     getValues(){
