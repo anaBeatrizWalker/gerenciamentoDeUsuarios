@@ -12,6 +12,10 @@ class UserController{
             //event pega todas as informações sobre o evento chamado
             event.preventDefault() //cancela a atualização de página do submit 
 
+            //trava o botão para não enviar o mesmo usuario varias vezes
+            let btn = this.formEl.querySelector("[type=submit]")
+            btn.disabled = true
+
             let values = this.getValues()
 
             this.getPhoto().then(
@@ -19,6 +23,10 @@ class UserController{
                 //quando der certo
                 values.photo = content
                 this.addLine(values) 
+                
+                //limpa o form e ativa o botão
+                this.formEl.reset()
+                btn.disabled = false
 
             }, (e)=>{
                 //quando der erro
