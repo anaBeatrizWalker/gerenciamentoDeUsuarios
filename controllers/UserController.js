@@ -109,10 +109,10 @@ class UserController{
         }
         return new User(
             user.name, 
+            user.email, 
             user.gender, 
             user.birth, 
             user.country, 
-            user.email, 
             user.password, 
             user.photo, 
             user.admin
@@ -147,11 +147,28 @@ class UserController{
             for(let name in json){
                 let field = form.querySelector("[name= "+ name.replace("_", "") +"]")
 
-                if(field){
-                    if(field.type == 'file') continue
-                    
-                    field.value = json[name]
-                }                
+                if(field){ //o campo existe?
+
+                    switch(field.type){ //analisa o tipo dos campos
+                        case 'file':
+                            continue;
+                            break; //se for file, apenas continue e não faça nada
+                        
+                        case 'radio':
+                            //localiza se o value é M ou F
+                            field = form.querySelector("[name= "+ name.replace("_", "") +"][value="+json[name]+"]")
+                            field.checked = true
+                            break; 
+
+                        case 'checkbox':
+                            //se for checkbox, pega o name checkado
+                            field.checked = json[name]
+                            break;
+
+                        default:
+                            field.value = json[name]
+                    }
+                }               
             }
 
             this.showPanelUpdate()

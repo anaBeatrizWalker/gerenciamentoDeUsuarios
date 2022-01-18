@@ -27,7 +27,7 @@ class User{
     }
 
     get gender(){
-        return this.gender
+        return this._gender
     }
 
     get birth(){
