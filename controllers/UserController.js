@@ -137,9 +137,22 @@ class UserController{
                         <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
                     </td>
                 </tr>`
+        
+        //Editar usuário
         tr.querySelector(".btn-edit").addEventListener('click', e=>{
             
-            console.log(JSON.parse(tr.dataset.user))
+            let json = JSON.parse(tr.dataset.user)
+            let form = document.querySelector('#form-user-update')
+            //Percorre cada campo que tenha como nome a propriedade do json 
+            for(let name in json){
+                let field = form.querySelector("[name= "+ name.replace("_", "") +"]")
+
+                if(field){
+                    if(field.type == 'file') continue
+                    
+                    field.value = json[name]
+                }                
+            }
 
             this.showPanelUpdate()
             
