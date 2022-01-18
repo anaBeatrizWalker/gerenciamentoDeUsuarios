@@ -42,7 +42,10 @@ class UserController{
                     </td>
                 </tr>`
             
-            //EVENTOS DOS BOTÕES DAS TR'S
+            this.addEventsTR(tr)
+
+            //atualizando estatísticas
+            this.updateCount()
         })
     }
 
@@ -169,9 +172,16 @@ class UserController{
                     </td>
                 </tr>`
         
+        this.addEventsTR(tr)
+
+        this.tableEl.appendChild(tr)
+
+        this.updateCount()
+    }
+    addEventsTR(tr){
         //Botão Editar
         tr.querySelector(".btn-edit").addEventListener('click', e=>{
-            
+    
             let json = JSON.parse(tr.dataset.user)
             let form = document.querySelector('#form-user-update')
 
@@ -208,10 +218,6 @@ class UserController{
             this.showPanelUpdate()
             
         })
-
-        this.tableEl.appendChild(tr)
-
-        this.updateCount()
     }
 
     showPanelCreate(){
