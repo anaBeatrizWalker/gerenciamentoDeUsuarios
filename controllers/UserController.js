@@ -1,6 +1,7 @@
 class UserController{
-    constructor(formId, tableId){
-        this.formEl = document.getElementById(formId)
+    constructor(formIdCreate, formIdUpdate, tableId){
+        this.formEl = document.getElementById(formIdCreate)
+        this.formUpdateEl = document.getElementById(formIdUpdate)
         this.tableEl = document.getElementById(tableId)
 
         this.onSubmit()
@@ -12,6 +13,36 @@ class UserController{
         document.querySelector("#box-user-update .btn-cancel").addEventListener("click", e=>{
         
             this.showPanelUpdate()
+        })
+
+        //Salva edição
+        this.formUpdateEl.addEventListener("submit", event=> {
+            event.preventDefault() //cancela a atualização de página do submit
+
+            let btn = this.formUpdateEl.querySelector("[type=submit]")
+            btn.disabled = true //impede o usuário de apertar o botão toda hora
+
+            let values = this.getValues(this.formUpdateEl) //recupera todos os campos preenchidos do formulário
+
+            let index = this.formUpdateEl.dataset.trIndex //pega o indice da linha, para que ela seja substituida e que crie uma linha nova
+
+            let tr = this.tableEl.rows[index] //pega o índice da linha que será editada
+
+            tr.dataset.user = JSON.stringify(values)
+            tr.innerHTML = `
+                <tr>
+                    <td><img src="${values.photo}" class="img-circle img-sm"></td>
+                    <td>${values.name}</td>
+                    <td>${values.email}</td>
+                    <td>${(values.admin) ?'Sim':'Não'}</td>
+                    <td>${Utils.dateFormat(values.register)}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
+                        <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+                    </td>
+                </tr>`
+            
+            //EVENTOS DOS BOTÕES DAS TR'S
         })
     }
 
@@ -25,7 +56,7 @@ class UserController{
             let btn = this.formEl.querySelector("[type=submit]")
             btn.disabled = true
 
-            let values = this.getValues()
+            let values = this.getValues(this.formEl)
 
             //se value for falso, cancela o envio do form
             if(!values) return false //corrige o problema da foto ser entendida como booleano por conta do isValid
@@ -77,13 +108,13 @@ class UserController{
         
     }
 
-    getValues(){
+    getValues(formEl){
 
         let user = {};
         let isValid = true;
 
         //elements substitui o fields (prop do objeto de form)
-        [...this.formEl.elements].forEach(function(field, index){
+        [...formEl.elements].forEach(function(field, index){
 
             //se o indexOf do array é > -1, ou seja, encontrou os campos E eles não estão vazios
             if(['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value){
@@ -138,11 +169,14 @@ class UserController{
                     </td>
                 </tr>`
         
-        //Editar usuário
+        //Botão Editar
         tr.querySelector(".btn-edit").addEventListener('click', e=>{
             
             let json = JSON.parse(tr.dataset.user)
             let form = document.querySelector('#form-user-update')
+
+            form.dataset.trIndex = tr.sectionRowIndex
+
             //Percorre cada campo que tenha como nome a propriedade do json 
             for(let name in json){
                 let field = form.querySelector("[name= "+ name.replace("_", "") +"]")
