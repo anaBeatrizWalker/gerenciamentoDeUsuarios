@@ -54,4 +54,17 @@ class User{
     set photo(value){
         this._photo = value
     }
+
+    loadFromJSON(json){
+        for(let name in json){ //pra cada name que encontrar no json
+            switch(name){
+                case '_register': //convertendo a data para um objeto
+                    this[name] = new Date(json[name])
+                break;
+
+                default:
+                    this[name] = json[name]
+            }
+        }
+    }
 }

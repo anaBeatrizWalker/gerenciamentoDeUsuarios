@@ -6,6 +6,7 @@ class UserController{
 
         this.onSubmit()
         this.onEdit()
+        this.selectAll()
     }
     
     onEdit(){
@@ -89,6 +90,10 @@ class UserController{
                 (content)=>{
                 //quando der certo
                 values.photo = content
+
+                //Inserir no sectionStorage
+                this.insert(values)
+
                 this.addLine(values) 
                 
                 //limpa o form e ativa o botão
@@ -174,6 +179,41 @@ class UserController{
         )
     }
 
+    getUsersStorage(){
+        let users = []
+        //se tem algo no sessionStorage
+        if(sessionStorage.getItem("user")){
+            //sobrescreve
+            users = JSON.parse(sessionStorage.getItem("user"))
+        }
+        return users
+    }
+
+    //Lista os dados que já estão no sessionStorage
+    selectAll(){
+        let users = this.getUsersStorage()
+
+        users.forEach(dataUser => {
+
+            let user = new User() //instância dos usuários pra poder funcionar no addLine
+
+            user.loadFromJSON(dataUser)//carrega de um json
+            
+            this.addLine(user)
+        })
+    }   
+
+    insert(data){
+
+        let users = this.getUsersStorage()
+
+        users.push(data)
+
+        //setItem(nome, valor)
+        sessionStorage.setItem("user", JSON.stringify(users))
+        //guarda um array de objetos json
+    }
+
     addLine(dataUser){
 
         let tr = document.createElement('tr')
@@ -199,6 +239,7 @@ class UserController{
 
         this.updateCount()
     }
+
     addEventsTR(tr){
         //Botão Excluir
         tr.querySelector(".btn-delete").addEventListener('click', e=>{
