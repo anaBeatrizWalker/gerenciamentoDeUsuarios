@@ -28,24 +28,47 @@ class UserController{
 
             let tr = this.tableEl.rows[index] //pega o índice da linha que será editada
 
-            tr.dataset.user = JSON.stringify(values)
-            tr.innerHTML = `
+            //Pega os objeto antigos (armazenados no dataset) e mescla/subscreve com o objetos novos (que serão atualizados), porém no campo o value é vazio ...
+            let userOld = JSON.parse(tr.dataset.user)//objeto antigo
+            let result = Object.assign({}, userOld, values)//novos valores
+
+            //Editar foto
+            this.getPhoto(this.formUpdateEl).then(
+                (content)=>{
+
+                //resolvendo o value vazio
+                if(!values.photo) {
+                    //mantém a foto antiga do formulário
+                    result._photo = userOld._photo
+                }else{
+                    //recebe o conteúdo
+                    result._photo = content
+                }
+
+                tr.dataset.user = JSON.stringify(result)
+                
+                tr.innerHTML = `
                 <tr>
-                    <td><img src="${values.photo}" class="img-circle img-sm"></td>
-                    <td>${values.name}</td>
-                    <td>${values.email}</td>
-                    <td>${(values.admin) ?'Sim':'Não'}</td>
-                    <td>${Utils.dateFormat(values.register)}</td>
+                    <td><img src="${result._photo}" class="img-circle img-sm"></td>
+                    <td>${result._name}</td>
+                    <td>${result._email}</td>
+                    <td>${(result._admin) ?'Sim':'Não'}</td>
+                    <td>${Utils.dateFormat(result._register)}</td>
                     <td>
                         <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
                         <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
                     </td>
                 </tr>`
-            
-            this.addEventsTR(tr)
+                this.addEventsTR(tr)
+                this.updateCount()
 
-            //atualizando estatísticas
-            this.updateCount()
+                //habilita o botao e limpa o form
+                btn.disabled = false
+                this.formUpdateEl.reset()
+                this.showPanelCreate()
+            })
+
+
         })
     }
 
@@ -64,7 +87,7 @@ class UserController{
             //se value for falso, cancela o envio do form
             if(!values) return false //corrige o problema da foto ser entendida como booleano por conta do isValid
 
-            this.getPhoto().then(
+            this.getPhoto(this.formEl).then(
                 (content)=>{
                 //quando der certo
                 values.photo = content
@@ -81,11 +104,11 @@ class UserController{
         })
     }
 
-    getPhoto(){
+    getPhoto(formEl){
         return new Promise((resolve, reject)=>{
             let fileReader = new FileReader();
 
-            let elements = [...this.formEl.elements].filter(item =>{
+            let elements = [...formEl.elements].filter(item =>{
                 if (item.name === 'photo'){//filter retorna apenas as fotos e retorna o arquivo
                     return item
                 }
@@ -183,13 +206,12 @@ class UserController{
         tr.querySelector(".btn-edit").addEventListener('click', e=>{
     
             let json = JSON.parse(tr.dataset.user)
-            let form = document.querySelector('#form-user-update')
 
-            form.dataset.trIndex = tr.sectionRowIndex
+            this.formUpdateEl.dataset.trIndex = tr.sectionRowIndex
 
             //Percorre cada campo que tenha como nome a propriedade do json 
             for(let name in json){
-                let field = form.querySelector("[name= "+ name.replace("_", "") +"]")
+                let field = this.formUpdateEl.querySelector("[name= "+ name.replace("_", "") +"]")
 
                 if(field){ //o campo existe?
 
@@ -200,7 +222,7 @@ class UserController{
                         
                         case 'radio':
                             //localiza se o value é M ou F
-                            field = form.querySelector("[name= "+ name.replace("_", "") +"][value="+json[name]+"]")
+                            field = this.formUpdateEl.querySelector("[name= "+ name.replace("_", "") +"][value="+json[name]+"]")
                             field.checked = true
                             break; 
 
@@ -214,6 +236,7 @@ class UserController{
                     }
                 }               
             }
+            this.formUpdateEl.querySelector('.photo').src = json._photo
 
             this.showPanelUpdate()
             
