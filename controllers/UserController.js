@@ -182,9 +182,9 @@ class UserController{
     getUsersStorage(){
         let users = []
         //se tem algo no sessionStorage
-        if(sessionStorage.getItem("user")){
+        if(localStorage.getItem("user")){
             //sobrescreve
-            users = JSON.parse(sessionStorage.getItem("user"))
+            users = JSON.parse(localStorage.getItem("user"))
         }
         return users
     }
@@ -210,7 +210,7 @@ class UserController{
         users.push(data)
 
         //setItem(nome, valor)
-        sessionStorage.setItem("user", JSON.stringify(users))
+        localStorage.setItem("user", JSON.stringify(users))
         //guarda um array de objetos json
     }
 
