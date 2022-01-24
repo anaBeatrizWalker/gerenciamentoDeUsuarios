@@ -87,11 +87,15 @@ class User{
     //Cria um id, para registrar unicamente cada usuário
     getNewId(){
 
-        if(!window.id) window.id = 0
+        let userId = parseInt(localStorage.getItem("userId"))
 
-        id++
+        if(!userId > 0) userId = 0 //se não existe, cria um que recebe zero
 
-        return id
+        userId++ //pega o existente e soma mais um
+
+        localStorage.setItem("userId", userId) //sempre que gerar um novo id, armazena o último no localS
+
+        return userId
     }
     
     save(){
@@ -116,5 +120,19 @@ class User{
             users.push(this)
         }
         localStorage.setItem("user", JSON.stringify(users))
+    }
+
+    remove(){
+        let users = User.getUsersStorage() //array de usuários
+
+        users.forEach((userData, index)=>{ //recebe os dados e a posição deles
+
+            if(this._id == userData._id){ //encontra o usuário que quer excluir
+
+                users.splice(index, 1) //splice elimina(indice do elemento, quantos irá remover)
+            }
+        })
+        localStorage.setItem("user",JSON.stringify(users))
+        //removeItem remove a chave do localeStorage, poderia ser usado para remover todos os usuários
     }
 }

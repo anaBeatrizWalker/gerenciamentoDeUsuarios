@@ -174,7 +174,7 @@ class UserController{
 
     //Lista os dados que já estão no localStorage
     selectAll(){
-        let users = this.getUsersStorage()
+        let users = User.getUsersStorage()
 
         users.forEach(dataUser => {
 
@@ -185,27 +185,6 @@ class UserController{
             this.addLine(user)
         })
     } 
-    
-    getUsersStorage(){
-        let users = []
-        //se tem algo no sessionStorage
-        if(localStorage.getItem("user")){
-            //sobrescreve
-            users = JSON.parse(localStorage.getItem("user"))
-        }
-        return users
-    }
-
-    insert(data){
-
-        let users = this.getUsersStorage()
-
-        users.push(data)
-
-        //setItem(nome, valor)
-        localStorage.setItem("user", JSON.stringify(users))
-        //guarda um array de objetos json
-    }
 
     addLine(dataUser){
         //Chama a tr criada com os dados do usuário
@@ -245,6 +224,11 @@ class UserController{
         //Botão Excluir
         tr.querySelector(".btn-delete").addEventListener('click', e=>{
             if(confirm("Deseja realmente excluir?")){
+
+                let user = new User()
+                user.loadFromJSON(JSON.parse(tr.dataset.user))
+
+                user.remove()//método do Users.js, remove do localStorage
                 
                 tr.remove()//comando html, remove da tela a linha tr do usuário
 
