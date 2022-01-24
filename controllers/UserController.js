@@ -49,6 +49,9 @@ class UserController{
                 let user = new User()
                 user.loadFromJSON(result) //tira o underline dos dados do usuário para serem usados na tabela
 
+                //Salva no localStorage
+                user.save()
+
                 this.getTr(user, tr)
                 
                 this.updateCount()
@@ -81,8 +84,8 @@ class UserController{
                 //quando der certo
                 values.photo = content
 
-                //Inserir no sectionStorage
-                this.insert(values)
+                //Salva no localStorage
+                values.save()
 
                 this.addLine(values) 
                 
@@ -169,16 +172,6 @@ class UserController{
         )
     }
 
-    getUsersStorage(){
-        let users = []
-        //se tem algo no localStorage
-        if(localStorage.getItem("user")){
-            //sobrescreve
-            users = JSON.parse(localStorage.getItem("user"))
-        }
-        return users
-    }
-
     //Lista os dados que já estão no localStorage
     selectAll(){
         let users = this.getUsersStorage()
@@ -191,7 +184,17 @@ class UserController{
             
             this.addLine(user)
         })
-    }   
+    } 
+    
+    getUsersStorage(){
+        let users = []
+        //se tem algo no sessionStorage
+        if(localStorage.getItem("user")){
+            //sobrescreve
+            users = JSON.parse(localStorage.getItem("user"))
+        }
+        return users
+    }
 
     insert(data){
 

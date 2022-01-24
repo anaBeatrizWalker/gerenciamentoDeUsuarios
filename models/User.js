@@ -3,6 +3,7 @@ class User{
     constructor(name, email, gender, birth, country, password, photo, admin){
         //this.atributo = variável do parâmetro
         //Inicializando os valores para serem usados em métodos dentro da classe
+        this._id;
         this._name = name;
         this._gender = gender;
         this._birth = birth;
@@ -14,6 +15,11 @@ class User{
         this._register = new Date()
     }
     //Métodos que retornam a propriedade corretamente
+
+    get id(){
+        return this._id
+    }
+
     get register(){
         return this._register
     }
@@ -66,5 +72,49 @@ class User{
                     this[name] = json[name]
             }
         }
+    }
+    
+    static getUsersStorage(){
+        let users = []
+        //se tem algo no localStorage
+        if(localStorage.getItem("user")){
+            //sobrescreve
+            users = JSON.parse(localStorage.getItem("user"))
+        }
+        return users
+    }
+
+    //Cria um id, para registrar unicamente cada usuário
+    getNewId(){
+
+        if(!window.id) window.id = 0
+
+        id++
+
+        return id
+    }
+    
+    save(){
+        let users = User.getUsersStorage()
+
+        //se o id existe
+        if(this.id > 0){
+            //editar o usuário
+            users.map(u => {
+
+                if(u._id == this.id){ //se o id for igual ao id do usuário a ser editado pega o objeto do usuário e substitui o que tiver que substituir
+                    
+                    Object.assign(u, this) //compara os dois e "atualiza" como o que veio do this 
+                }
+                return u
+            })
+
+        } else{
+            //se não existe, gera um novo
+            this._id = this.getNewId()
+
+            users.push(this)
+        }
+        localStorage.setItem("user", JSON.stringify(users))
     }
 }
