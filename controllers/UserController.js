@@ -46,21 +46,11 @@ class UserController{
                     result._photo = content
                 }
 
-                tr.dataset.user = JSON.stringify(result)
+                let user = new User()
+                user.loadFromJSON(result) //tira o underline dos dados do usuário para serem usados na tabela
+
+                this.getTr(user, tr)
                 
-                tr.innerHTML = `
-                <tr>
-                    <td><img src="${result._photo}" class="img-circle img-sm"></td>
-                    <td>${result._name}</td>
-                    <td>${result._email}</td>
-                    <td>${(result._admin) ?'Sim':'Não'}</td>
-                    <td>${Utils.dateFormat(result._register)}</td>
-                    <td>
-                        <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-                        <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-                    </td>
-                </tr>`
-                this.addEventsTR(tr)
                 this.updateCount()
 
                 //habilita o botao e limpa o form
@@ -181,7 +171,7 @@ class UserController{
 
     getUsersStorage(){
         let users = []
-        //se tem algo no sessionStorage
+        //se tem algo no localStorage
         if(localStorage.getItem("user")){
             //sobrescreve
             users = JSON.parse(localStorage.getItem("user"))
@@ -189,7 +179,7 @@ class UserController{
         return users
     }
 
-    //Lista os dados que já estão no sessionStorage
+    //Lista os dados que já estão no localStorage
     selectAll(){
         let users = this.getUsersStorage()
 
@@ -215,29 +205,37 @@ class UserController{
     }
 
     addLine(dataUser){
+        //Chama a tr criada com os dados do usuário
+        let tr = this.getTr(dataUser)
 
-        let tr = document.createElement('tr')
-
-        tr.dataset.user = JSON.stringify(dataUser) //serialização
-
-        tr.innerHTML = `
-                <tr>
-                    <td><img src="${dataUser.photo}" class="img-circle img-sm"></td>
-                    <td>${dataUser.name}</td>
-                    <td>${dataUser.email}</td>
-                    <td>${(dataUser.admin) ?'Sim':'Não'}</td>
-                    <td>${Utils.dateFormat(dataUser.register)}</td>
-                    <td>
-                        <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-                        <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
-                    </td>
-                </tr>`
-        
-        this.addEventsTR(tr)
-
+        //Coloca a tr criada como filho de table
         this.tableEl.appendChild(tr)
 
+        //Assim que adicionar uma nova linha (table), atualiza a quantidade de usuários
         this.updateCount()
+    }
+
+    getTr(dataUser, tr = null){// tr = null, parametro não obrigatório. Para quando a tr não existir e o 1º cadastro for feito
+
+        if(tr === null) tr = document.createElement("tr")
+
+        //Guarda cada valor do tr no dataset; user é uma var; json converteu de objeto para string
+        tr.dataset.user = JSON.stringify(dataUser)
+
+        tr.innerHTML =  `
+            <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
+            <td>${dataUser.name}</td>
+            <td>${dataUser.email}</td>
+            <td>${(dataUser.admin)?'Sim':'Não'}</td>
+            <td>${Utils.dateFormat(dataUser.register)}</td>
+            <td>
+                <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
+                <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
+            </td>
+        `
+        this.addEventsTR(tr)
+        
+        return tr
     }
 
     addEventsTR(tr){
